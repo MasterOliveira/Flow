@@ -39,7 +39,7 @@ package org.flowplayer.menu.ui{
 		}
 		
 		public function animateVolumeButton(volume:Number):void{
-			var buttonIcon:MovieClip = (_widget as GenericTooltipButton).getface() as MovieClip;
+			var buttonIcon:MovieClip = (_widget as GenericTooltipButton).face as MovieClip;
 			buttonIcon.icon.gotoAndStop("f" + Math.ceil((volume-3)/25));
 		}
 		

@@ -1,0 +1,60 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script src="../src/javascript/flowplayer.js/flowplayer-3.2.11.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href=""
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../../../flash-build/build/flowplayer.swf",
+    {
+        log: { level: 'error', filter: 'org.flowplayer.rtmp.*, org.flowplayer.controller.*' },
+        onBegin: function() {
+            console.log("onBegin");
+        },
+
+        onStart: function() {
+            console.log("onStart");
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+
+        clip: {
+            url: 'mp4:buffalo_soldiers',
+            provider: 'rtmp',
+//            autoPlay: false,
+            autoBuffering:true
+        },
+
+        plugins: {
+            rtmp: {
+                url: 'flowplayer.rtmp-3.2.13-dev.swf',
+                netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st'
+            }
+        }
+    });
+</script>
+	</div>
+	
+	
+</body></html>
