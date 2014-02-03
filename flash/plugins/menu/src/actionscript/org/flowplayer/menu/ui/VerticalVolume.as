@@ -105,7 +105,7 @@ package org.flowplayer.menu.ui {
 		}
 		
 		public function getDefaultConfig():Object {
-			return { width: 20, height: 200 };
+			return { width: 30, height: 200 };
 		}
 		
 		private function createVolumeButton(player:Flowplayer):void {

@@ -32,7 +32,7 @@ package org.flowplayer.ui.buttons {
             return _buttonFace;
         }
 		
-		public function get face():DisplayObjectContainer{
+		public function getface():DisplayObjectContainer{
 			return _buttonFace;
 		}
 	}

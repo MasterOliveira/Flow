@@ -20,6 +20,7 @@ package org.flowplayer.menu.ui{
 		private var _bar:MovieClip;
 		
 		private var _mouseDown:Boolean;
+		private var _minDraggerButtonY:Number;
 		private var _maxDraggerButtonY:Number;
 		private var _player:Flowplayer;
 		
@@ -33,6 +34,7 @@ package org.flowplayer.menu.ui{
 			_player = player;
 			_draggerButton = _volumeBarClip.dragger;
 			_maxDraggerButtonY = _draggerButton.y;
+			_minDraggerButtonY = _volumeBarClip.minY.y;
 			
 			updateVolumeBarWithPlayerVolume();
 			
@@ -54,7 +56,7 @@ package org.flowplayer.menu.ui{
 		}
 		
 		private function updateDraggerButtonPosition(volume:Number):void {			
-			_draggerButton.y =  _maxDraggerButtonY*(1-volume/100);
+			_draggerButton.y =  _minDraggerButtonY+draggerRailSize*(1-volume/100);
 		}
 		
 		private function updateBarScale(volume:Number):void {
@@ -76,14 +78,18 @@ package org.flowplayer.menu.ui{
 		
 		private function mouseBoundedRelativeY():Number {
 			var mouseRelativeY:Number= mouseY - _draggerButton.height / 2;
-			if (mouseRelativeY < 0) 				 { return 0;					} 
-			if (mouseRelativeY > _maxDraggerButtonY) { return _maxDraggerButtonY;	}
-			return mouseRelativeY;
+			if (mouseRelativeY < _minDraggerButtonY) { return 0;				} 
+			if (mouseRelativeY > _maxDraggerButtonY) { return draggerRailSize;	}
+			return mouseRelativeY-_minDraggerButtonY;
 		}
 		
 		//In range [0,100]
 		private function calcVolume():Number{
-			return (1-mouseBoundedRelativeY()/_maxDraggerButtonY)*100;
+			return (1-mouseBoundedRelativeY()/draggerRailSize)*100;
+		}
+		
+		private function get draggerRailSize():Number{
+			return _maxDraggerButtonY-_minDraggerButtonY;
 		}
 		
 		private function setPlayerVolume(value:Number){
