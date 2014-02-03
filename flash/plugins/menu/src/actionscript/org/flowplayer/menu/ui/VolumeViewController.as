@@ -18,29 +18,24 @@ package org.flowplayer.menu.ui{
     import org.flowplayer.view.AnimationEngine;
     import org.flowplayer.view.Flowplayer;
 
-    public class VolumeButtonController extends AbstractButtonController{
+    public class VolumeViewController extends AbstractButtonController{
         private var _volumeBar:VerticalVolume;
         private var _model:DisplayPluginModel;
 		private var _hideTimer:Timer;
 
-		public function VolumeButtonController(player:Flowplayer,  menuModel:DisplayPluginModel){
+		public function VolumeViewController(player:Flowplayer,  menuModel:DisplayPluginModel){
             _player = player;
             _volumeBar = menuModel.getDisplayObject() as VerticalVolume;
             _model = menuModel;
 			
 			_hideTimer = new Timer(2000,1);
-			_hideTimer.addEventListener(TimerEvent.TIMER, _hideVolumeBar);
+			_hideTimer.addEventListener(TimerEvent.TIMER, hideVolumeBar);
 			
-			_setListeners();
+			setListeners();
 		}
 		
-		public function onPlayerVolumeEvent(event:PlayerEvent):void{
+		protected function onPlayerVolumeEvent(event:PlayerEvent):void{
 			animateVolumeButton(event.info as Number)
-		}
-		
-		public function animateVolumeButton(volume:Number):void{
-			var buttonIcon:MovieClip = (_widget as GenericTooltipButton).getface() as MovieClip;
-			buttonIcon.icon.gotoAndStop("f" + Math.ceil((volume-3)/25));
 		}
 		
 		override protected function onButtonClicked(event:ButtonEvent):void{
@@ -48,18 +43,23 @@ package org.flowplayer.menu.ui{
 
             var show:Boolean = _volumeBar.alpha == 0 || ! _volumeBar.visible || ! _volumeBar.parent;
             if (show) {
-				_showVolumeBar()
+				showVolumeBar()
             } else {
-				_hideVolumeBar()
+				hideVolumeBar()
             }
 		}
 		
-		private function _setListeners():void{
+		private function animateVolumeButton(volume:Number):void{
+			var buttonIcon:MovieClip = (_widget as GenericTooltipButton).getface() as MovieClip;
+			buttonIcon.icon.gotoAndStop("f" + Math.ceil((volume-3)/25));
+		}
+		
+		private function setListeners():void{
 			_player.onVolume(onPlayerVolumeEvent);
 			_volumeBar.addEventListener(MouseEvent.MOUSE_DOWN, _onMouseDown);
 		}
 		
-		protected function _showVolumeBar():void{
+		public function showVolumeBar():void{
 			_volumeBar.updateModelProp("display", "block");
 			_volumeBar.alpha = 0;
 			_player.animationEngine.fadeIn(_volumeBar);
@@ -69,9 +69,10 @@ package org.flowplayer.menu.ui{
 			_volumeBar.addEventListener(MouseEvent.MOUSE_MOVE, _onMouseMove);
 		}
 		
-		protected function _hideVolumeBar(event:Event = null):void{
-			_player.animationEngine.fadeOut(_volumeBar);
+		public function hideVolumeBar(event:Event = null):void{
 			_volumeBar.removeEventListener(MouseEvent.ROLL_OUT, _onRollOut);
+			_volumeBar.removeEventListener(MouseEvent.MOUSE_MOVE, _onMouseMove);
+			_player.animationEngine.fadeOut(_volumeBar);
 		}
 		
 		private function _onRollOut(event:MouseEvent):void{

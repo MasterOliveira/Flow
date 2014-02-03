@@ -12,7 +12,6 @@ package org.flowplayer.menu.ui {
 	import org.flowplayer.controller.ResourceLoader;
 	import org.flowplayer.flow_internal;
 	import org.flowplayer.menu.*;
-	import org.flowplayer.menu.ui.VolumeContainer;
 	import org.flowplayer.model.DisplayPluginModel;
 	import org.flowplayer.model.PlayerEvent;
 	import org.flowplayer.model.Plugin;
@@ -35,13 +34,32 @@ package org.flowplayer.menu.ui {
 		private var _dock:Dock;
 		private var _player:Flowplayer;
 		private var _name:String;
-		private var _volumeButtonController:VolumeButtonController;
+		private var _volumeViewController:VolumeViewController;
 		private var _volumeButtonContainer:WidgetContainer;
 		private var _model:PluginModel;
 
-		public function addSlider():void {
-			var container:VolumeContainer = new VolumeContainer(_player);
+		private function addSlider():void {
+			var container:VolumeBarContainer = new VolumeBarContainer(_player);
 			_dock.addIcon(container);
+		}
+		
+		private function createDock():void {
+			log.debug("createDock()");
+			var dockConfig:DockConfig = new DockConfig();
+			dockConfig.model = DisplayPluginModel(model.clone());
+			dockConfig.model.display = "block";
+			dockConfig.gap = 0;
+			dockConfig.setButtons(_config.scrollButtons);
+			
+			if (_config.button.dockedOrControls) {
+				updateModelProp("display", "none");
+				updateModelProp("alpha", 0);
+			}
+			dockConfig.scrollable = _config.scrollable;
+			
+			_dock = new Dock(_player, dockConfig);
+			addChild(_dock);
+			
 		}
 		
 		private function get model():DisplayPluginModel {
@@ -79,11 +97,6 @@ package org.flowplayer.menu.ui {
 			});
 		}
 		
-		override protected function onResize():void {
-			_dock.setSize(width, height);
-			updateModelHeight();
-		}
-		
 		private function updateModelHeight():void {
 			updateModelProp("height", _dock.height);
 		}
@@ -104,6 +117,11 @@ package org.flowplayer.menu.ui {
 			return confObj && (confObj.hasOwnProperty("top") || confObj.hasOwnProperty("bottom"));
 		}
 		
+		override protected function onResize():void {
+			_dock.setSize(width, height);
+			updateModelHeight();
+		}
+		
 		public function getDefaultConfig():Object {
 			return { width: 30, height: 200 };
 		}
@@ -117,14 +135,14 @@ package org.flowplayer.menu.ui {
 			}
 		}
 		
-		public function get volumeButtonController():VolumeButtonController {
-			return _volumeButtonController;
+		public function get volumeViewController():VolumeViewController {
+			return _volumeViewController;
 		}
 		
 		private function addControlsVolumeButton(event:WidgetContainerEvent):void {
 			_volumeButtonContainer = event.container;
-			_volumeButtonController = new VolumeButtonController(_player,  model);
-			_volumeButtonContainer.addWidget(_volumeButtonController, "time", false);
+			_volumeViewController = new VolumeViewController(_player,  model);
+			_volumeButtonContainer.addWidget(_volumeViewController, "time", false);
 			
 			if (this.stage) {
 				adjustDockPosition();
@@ -140,7 +158,7 @@ package org.flowplayer.menu.ui {
 
 			
 			if (! horizontalPosConfigured) {
-				myModel.left = _volumeButtonController.view.x;
+				myModel.left = _volumeViewController.view.x;
 			}
 			if (! verticalPosConfigured) {
 				
@@ -158,25 +176,6 @@ package org.flowplayer.menu.ui {
 		{
 			adjustDockPosition();
 			this.removeEventListener(Event.ADDED_TO_STAGE, adjustDockOnStage);
-		}
-		
-		private function createDock():void {
-			log.debug("createDock()");
-			var dockConfig:DockConfig = new DockConfig();
-			dockConfig.model = DisplayPluginModel(model.clone());
-			dockConfig.model.display = "block";
-			dockConfig.gap = 0;
-			dockConfig.setButtons(_config.scrollButtons);
-			
-			if (_config.button.dockedOrControls) {
-				updateModelProp("display", "none");
-				updateModelProp("alpha", 0);
-			}
-			dockConfig.scrollable = _config.scrollable;
-			
-			_dock = new Dock(_player, dockConfig);
-			addChild(_dock);
-			
 		}
 		
 		private function moveDockToNewHeight():void {
